@@ -10,7 +10,11 @@ class CuisinesController < ApplicationController
 
   # GET /cuisines/1
   def show
-    render json: CuisineSerializer.new(@cuisine, include: [:recipes])
+    hash = CuisineSerializer.new(@cuisine, include: [:recipes]).serializable_hash
+    render json: {
+      cuisine: hash[:data][:attributes],
+      recipes: hash[:included].map{|recipe| recipe[:attributes]}
+    }
   end
 
   # POST /cuisines
@@ -18,7 +22,7 @@ class CuisinesController < ApplicationController
     @cuisine = Cuisine.new(cuisine_params)
 
     if @cuisine.save
-      render json: @cuisine, status: :created, location: @cuisine
+      render json: @cuisine, status: :created
     else
       render json: @cuisine.errors, status: :unprocessable_entity
     end
@@ -32,6 +36,6 @@ class CuisinesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def cuisine_params
-      params.require(:cuisine).permit(:cuisine_name)
+      params.require(:cuisine).permit(:name)
     end
-end
+  end 

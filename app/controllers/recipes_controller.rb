@@ -3,9 +3,9 @@ class RecipesController < ApplicationController
 
   # GET /recipes
   def index
-    @recipes = Recipe.all
-
-    render json: @recipes
+    @recipes = Recipe.all 
+    @data = RecipeSerializer.new(@recipes).serializable_hash[:data].map{|hash| hash[:attributes]}
+    render json: @data
   end
 
   # GET /recipes/1
@@ -13,17 +13,18 @@ class RecipesController < ApplicationController
     hash = RecipeSerializer.new(@recipe, include: [:recipes]).serializable_hash 
     render json: {
       cuisine: hash[:data][:attributes],
-      recipes: hash[:included].map{|event| event[:attributes]}
+      recipes: hash[:included].map{|recipe| recipe[:attributes]}
     }
   end
 
+  # Because a user has_many :recipes, we can do current_user.recipes.build in our controller to have the foreign key, :user_id, assigned automatically. 
   # POST /recipes
   def create
-    @recipe = current_user.recipes.build(event_params) 
+    @recipe = current_user.recipes.build(recipe_params) 
     if @recipe.save
       render json: @recipe, status: :created
     else
-      render json: @event.errors, status: :unprocessable_entity 
+      render json: @recipe.errors, status: :unprocessable_entity 
     end 
   end
 
