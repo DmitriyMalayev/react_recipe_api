@@ -1,4 +1,4 @@
-Rails.application.config.middleware.insert_before 0, Rack::Cors do
+Rails.application.config.middleware.insert_before 0, Rack::Cors do   #config/initializers/cors
   allow do
     origins "*"
     resource(

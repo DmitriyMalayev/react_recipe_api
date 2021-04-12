@@ -1,4 +1,4 @@
-Rails.application.routes.draw do
+Rails.application.routes.draw do    #config/routes.rb
   resources :recipes
   resources :cuisines, except: [:update, :destroy] 
   devise_for :users, path: '', path_names: {
